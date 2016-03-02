@@ -37,6 +37,7 @@ public class SubjectFragment extends BaseFragment
     private ListView mNewsListView;
     private StoryAdapter mStoryAdapter;
     private SwipeRefreshLayout mRefresh;
+    private int mSubjectId;
 
 
     public static SubjectFragment newInstance(int id)
@@ -55,6 +56,8 @@ public class SubjectFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
+
+        mSubjectId = getArguments().getInt(SUBJECT_ID);
 
         initView(view);
         setupListener(view);
@@ -86,7 +89,7 @@ public class SubjectFragment extends BaseFragment
 
     private void initData(View view) {
 
-        mStoryAdapter = new StoryAdapter(getActivity());
+        mStoryAdapter = new StoryAdapter(getActivity(), mSubjectId);
         mNewsListView.setAdapter(mStoryAdapter);
 
         initLastestNews(true);
@@ -95,7 +98,7 @@ public class SubjectFragment extends BaseFragment
     public void initLastestNews(final boolean cleanBefore) {
         OkHttpClient client = HttpUtils.getInstance();
 
-        String url = SUBJECT_CONTENT_URL + getArguments().getInt(SUBJECT_ID);
+        String url = SUBJECT_CONTENT_URL + mSubjectId;
 
         Log.i("test", url);
 

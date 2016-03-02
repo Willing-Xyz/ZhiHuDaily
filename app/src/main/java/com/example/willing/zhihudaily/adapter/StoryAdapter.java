@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.willing.zhihudaily.R;
 import com.example.willing.zhihudaily.model.BeforeStoriesEntity;
+import com.example.willing.zhihudaily.model.BeforeSubjectEntity;
 import com.example.willing.zhihudaily.model.StoryEntity;
 import com.example.willing.zhihudaily.utils.HttpUtils;
 import com.example.willing.zhihudaily.utils.StoryType;
@@ -36,23 +37,38 @@ import okhttp3.Response;
 public class StoryAdapter extends BaseAdapter{
 
     private static final String BEFORE_NEWS_URL = "http://news.at.zhihu.com/api/4/news/before/";
+    private static final String BEFORE_SUBJECT_URL = "http://news.at.zhihu.com/api/4/theme/";
+
     private List<StoryEntity> mStories;
     private Context mContext;
 
     private String mDate;
+    private int mSubjectId;
 
     private DisplayImageOptions mOptions;
 
-    public StoryAdapter(Context context)
+
+    public StoryAdapter(Context context, int id)
     {
         mContext = context;
         mStories = new ArrayList<StoryEntity>();
         mDate = Utils.convertDateToString(Calendar.getInstance());
+        mSubjectId = id;
         mOptions = new DisplayImageOptions.Builder()
                 .resetViewBeforeLoading(true)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
+    }
+
+    public StoryAdapter(Context context)
+    {
+        this(context, -1);
+    }
+
+    public void setSubjectId(int id)
+    {
+        mSubjectId = id;
     }
 
     @Override
@@ -105,7 +121,6 @@ public class StoryAdapter extends BaseAdapter{
             }
             storyViewHolder.mTitle.setText(mStories.get(position).getTitle());
             if (mStories.get(position).getImages() != null) {
-                Log.i("test", "" + mStories.get(position).getImages().get(0));
                 ImageLoader.getInstance().displayImage(mStories.get(position).getImages().get(0), storyViewHolder.mImage, mOptions);
             }
         }
@@ -130,11 +145,48 @@ public class StoryAdapter extends BaseAdapter{
 
         if (position == getCount() - 1)
         {
-            fetchBeforeStory(parent);
-
+            if (mSubjectId != -1) {
+                fetchSubjectBeforeStory(parent);
+            }
+            else {
+                fetchBeforeStory(parent);
+            }
         }
 
         return convertView;
+    }
+
+    private void fetchSubjectBeforeStory(final ViewGroup parent) {
+
+        OkHttpClient client = HttpUtils.getInstance();
+
+        String url = BEFORE_SUBJECT_URL + mSubjectId + "/before/" + mStories.get(mStories.size() - 1).getId();
+
+        Log.i("test", url);
+
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                Gson gson = new Gson();
+
+                final BeforeSubjectEntity news = gson.fromJson(response.body().string(), BeforeSubjectEntity.class);
+
+                parent.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        addStories(news.getStories());
+                    }
+                });
+            }
+        });
     }
 
     public void addStories(List<StoryEntity> stories)
