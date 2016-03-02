@@ -1,14 +1,17 @@
 package com.example.willing.zhihudaily.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.willing.zhihudaily.R;
+import com.example.willing.zhihudaily.activity.ContentActivity;
 import com.example.willing.zhihudaily.adapter.StoryAdapter;
 import com.example.willing.zhihudaily.model.LastestStoriesEntity;
 import com.example.willing.zhihudaily.model.StoryEntity;
@@ -64,7 +67,17 @@ public class MainFragment extends BaseFragment {
             }
         });
 
+        mNewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Intent intent = new Intent(MainFragment.this.getActivity(), ContentActivity.class);
+
+                StoryEntity entity = (StoryEntity) parent.getItemAtPosition(position);
+                intent.putExtra(ContentActivity.STORY_ID, entity.getId());
+                startActivity(intent);
+            }
+        });
     }
 
     private void initView(View view) {

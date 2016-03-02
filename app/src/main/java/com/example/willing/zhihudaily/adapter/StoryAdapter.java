@@ -1,7 +1,6 @@
 package com.example.willing.zhihudaily.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -161,8 +160,6 @@ public class StoryAdapter extends BaseAdapter{
         OkHttpClient client = HttpUtils.getInstance();
 
         String url = BEFORE_SUBJECT_URL + mSubjectId + "/before/" + mStories.get(mStories.size() - 1).getId();
-
-        Log.i("test", url);
 
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {

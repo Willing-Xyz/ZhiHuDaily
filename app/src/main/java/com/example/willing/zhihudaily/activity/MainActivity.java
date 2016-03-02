@@ -124,6 +124,8 @@ public class MainActivity extends BaseActivity
                 getSupportFragmentManager().beginTransaction().replace(R.id.story_list, frag).commit();
 
                 mDrawer.closeDrawer(GravityCompat.START);
+
+
                 return true;
             }
         });
