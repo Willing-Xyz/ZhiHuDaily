@@ -120,7 +120,16 @@ public class StoryAdapter extends BaseAdapter{
             }
             storyViewHolder.mTitle.setText(mStories.get(position).getTitle());
             if (mStories.get(position).getImages() != null) {
+
+                if (storyViewHolder.mImage.getVisibility() == View.GONE)
+                {
+                    storyViewHolder.mImage.setVisibility(View.VISIBLE);
+                }
                 ImageLoader.getInstance().displayImage(mStories.get(position).getImages().get(0), storyViewHolder.mImage, mOptions);
+            }
+            else
+            {
+                storyViewHolder.mImage.setVisibility(View.GONE);
             }
         }
         else
@@ -211,6 +220,11 @@ public class StoryAdapter extends BaseAdapter{
 
                 final BeforeStoriesEntity news = gson.fromJson(response.body().string(), BeforeStoriesEntity.class);
 
+//                for (int i = 0; i < news.getStories().size(); ++i)
+//                {
+//                    Log.i("test", news.getStories().get(i).getType() + ", " + news.getStories().get(i).getTitle());
+//                }
+
                 mDate = news.getDate();
                 StoryEntity dateItem = new StoryEntity();
                 dateItem.setItemType(StoryType.DATE_TYPE);
@@ -230,6 +244,11 @@ public class StoryAdapter extends BaseAdapter{
 
     public void clear() {
         mStories.clear();
+    }
+
+    public ArrayList<StoryEntity> getStories() {
+
+        return (ArrayList<StoryEntity>) mStories;
     }
 
     class StoryViewHolder

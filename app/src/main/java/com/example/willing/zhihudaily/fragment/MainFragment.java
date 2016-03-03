@@ -74,7 +74,8 @@ public class MainFragment extends BaseFragment {
                 Intent intent = new Intent(MainFragment.this.getActivity(), ContentActivity.class);
 
                 StoryEntity entity = (StoryEntity) parent.getItemAtPosition(position);
-                intent.putExtra(ContentActivity.STORY_ID, entity.getId());
+                intent.putExtra(ContentActivity.LIST_INDEX, position);
+                intent.putExtra(ContentActivity.STORY_LIST, mStoryAdapter.getStories());
                 startActivity(intent);
             }
         });

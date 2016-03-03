@@ -1,11 +1,12 @@
 package com.example.willing.zhihudaily.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Willing on 3/2/2016/002.
  */
-public class StoryEntity {
+public class StoryEntity implements Serializable{
 
 
     /**
