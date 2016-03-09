@@ -19,7 +19,9 @@ import com.example.willing.zhihudaily.model.LastestStoriesEntity;
 import com.example.willing.zhihudaily.model.StoryEntity;
 import com.example.willing.zhihudaily.utils.HttpUtils;
 import com.example.willing.zhihudaily.utils.StoryType;
+import com.example.willing.zhihudaily.view.CarouselView;
 import com.google.gson.Gson;
+import com.viewpagerindicator.PageIndicator;
 
 import java.io.IOException;
 
@@ -36,13 +38,12 @@ public class MainFragment extends BaseFragment {
 
     private static final String LASTEST_NEWS_URL = "http://news-at.zhihu.com/api/4/news/latest";
 
-
-
-
     private ListView mNewsListView;
     private StoryAdapter mStoryAdapter;
     private SwipeRefreshLayout mRefresh;
     private OnPageChangedListener mPageChangedListener;
+    private CarouselView mCarouselView;
+    private PageIndicator mIndicator;
 
 
     @Override
@@ -70,19 +71,17 @@ public class MainFragment extends BaseFragment {
         return view;
     }
 
-
-
     private void setupListener(View view) {
 
-        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                initLastestNews(true);
-
-                mRefresh.setRefreshing(false);
-            }
-        });
+//        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//
+//                initLastestNews(true);
+//
+//                mRefresh.setRefreshing(false);
+//            }
+//        });
 
         mNewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -106,7 +105,7 @@ public class MainFragment extends BaseFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (visibleItemCount == 0)
+                if (visibleItemCount <= 1 || firstVisibleItem == 0)
                 {
                     return;
                 }
@@ -114,21 +113,19 @@ public class MainFragment extends BaseFragment {
                 StoryEntity entity = (StoryEntity) view.getItemAtPosition(firstVisibleItem);
                 if (entity.getItemType() == StoryType.DATE_TYPE)
                 {
-                    if (firstVisibleItem == 0)
+                    if (firstVisibleItem == 1)
                     {
                         mPageChangedListener.onPageChanged(entity.getTitle());
                     }
                     else
                     {
-
-
                         mPageChangedListener.onPageChanged(entity.getTitle());
                     }
                 }
                 else
                 {
                     int i = 0;
-                    for (i = firstVisibleItem - 1; i >= 0; --i)
+                    for (i = firstVisibleItem - 1; i >= 1; --i)
                     {
                         entity = (StoryEntity) view.getItemAtPosition(i);
                         if (entity.getItemType() == StoryType.DATE_TYPE)
@@ -137,7 +134,7 @@ public class MainFragment extends BaseFragment {
                         }
 
                     }
-                    if (i == 0)
+                    if (i == 1)
                     {
                         mPageChangedListener.onPageChanged(entity.getTitle());
                         return;
@@ -149,6 +146,8 @@ public class MainFragment extends BaseFragment {
                 }
             }
         });
+
+
     }
 
     private void initView(View view) {
@@ -156,12 +155,20 @@ public class MainFragment extends BaseFragment {
         mNewsListView = (ListView) view.findViewById(R.id.news);
         mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.refresh);
 
+        View layout = LayoutInflater.from(getActivity()).inflate(R.layout.main_headview, mNewsListView, false);
+        mCarouselView = (CarouselView) layout.findViewById(R.id.carousel);
+        mIndicator = (PageIndicator) layout.findViewById(R.id.indicator);
+
+
+        mNewsListView.addHeaderView(layout);
+
     }
 
     private void initData(View view) {
 
         mStoryAdapter = new StoryAdapter(getActivity());
         mNewsListView.setAdapter(mStoryAdapter);
+
 
         initLastestNews(true);
     }
@@ -196,6 +203,12 @@ public class MainFragment extends BaseFragment {
                             mStoryAdapter.clear();
                         }
                         mStoryAdapter.addStories(news.getStories());
+
+
+
+                        mCarouselView.setAdapter(news.getTop_stories());
+                        mIndicator.setViewPager(mCarouselView);
+
                     }
                 });
             }

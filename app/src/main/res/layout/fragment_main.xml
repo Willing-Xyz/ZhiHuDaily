@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/refresh"
             android:layout_width="wrap_content"
@@ -16,11 +14,11 @@
             >
 
 
-
             <ListView
                 android:id="@+id/news"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></ListView>
+
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

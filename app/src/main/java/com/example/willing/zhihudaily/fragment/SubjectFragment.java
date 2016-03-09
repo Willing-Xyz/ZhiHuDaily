@@ -100,7 +100,7 @@ public class SubjectFragment extends BaseFragment
 
         String url = SUBJECT_CONTENT_URL + mSubjectId;
 
-        Log.i("test", url);
+        Log.i("main_headview", url);
 
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
