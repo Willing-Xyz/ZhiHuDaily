@@ -149,6 +149,7 @@ public class StoryAdapter extends BaseAdapter{
                 dateViewHolder = (DateViewHolder) convertView.getTag();
             }
             dateViewHolder.mDate.setText(mStories.get(position).getTitle());
+
         }
 
         if (position == getCount() - 1)

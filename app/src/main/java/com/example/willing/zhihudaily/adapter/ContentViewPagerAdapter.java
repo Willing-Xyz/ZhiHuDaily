@@ -2,14 +2,19 @@ package com.example.willing.zhihudaily.adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.willing.zhihudaily.R;
 import com.example.willing.zhihudaily.model.StoryContentEntity;
 import com.example.willing.zhihudaily.model.StoryEntity;
 import com.example.willing.zhihudaily.utils.HttpUtils;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,16 +39,16 @@ public class ContentViewPagerAdapter extends PagerAdapter
     {
         mContext = context;
         mStories = stories;
-
-
     }
 
     @Override
     public Object instantiateItem(final ViewGroup container, int position) {
 
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.viewpager_content, container, false);
 
-
-        final WebView webView = new WebView(mContext);
+        final ImageView imageView = (ImageView) view.findViewById(R.id.image);
+        final TextView textView = (TextView) view.findViewById(R.id.title);
+        final WebView webView = (WebView) view.findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
 
         OkHttpClient client = HttpUtils.getInstance();
@@ -59,7 +64,7 @@ public class ContentViewPagerAdapter extends PagerAdapter
             public void onResponse(Call call, Response response) throws IOException {
 
                 Gson gson = new Gson();
-                StoryContentEntity content = gson.fromJson(response.body().string(), StoryContentEntity.class);
+                final StoryContentEntity content = gson.fromJson(response.body().string(), StoryContentEntity.class);
 
                 String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/css/news.css\" type=\"text/css\">";
                 String html = "<html><head>" + css + "</head><body>" + content.getBody() + "</body></html>";
@@ -71,15 +76,26 @@ public class ContentViewPagerAdapter extends PagerAdapter
                     public void run() {
 
                         webView.loadDataWithBaseURL("x-data://base", finalHtml, "text/html", "UTF-8", null);
+
+                        if (content.getImage() == null)
+                        {
+                           view.setVisibility(View.GONE);
+                        }
+                        else {
+                            ImageLoader.getInstance().displayImage(content.getImage(), imageView);
+                            textView.setText(content.getTitle());
+                        }
                     }
                 });
+
+
             }
         });
 
 
-        container.addView(webView);
+        container.addView(view);
 
-        return webView;
+        return view;
     }
 
     @Override

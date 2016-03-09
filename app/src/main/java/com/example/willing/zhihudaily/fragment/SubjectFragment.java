@@ -1,5 +1,6 @@
 package com.example.willing.zhihudaily.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -7,13 +8,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.willing.zhihudaily.R;
+import com.example.willing.zhihudaily.activity.ContentActivity;
 import com.example.willing.zhihudaily.adapter.StoryAdapter;
+import com.example.willing.zhihudaily.model.StoryEntity;
 import com.example.willing.zhihudaily.model.SubjectStoriesEntity;
 import com.example.willing.zhihudaily.utils.HttpUtils;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 
@@ -38,6 +45,8 @@ public class SubjectFragment extends BaseFragment
     private StoryAdapter mStoryAdapter;
     private SwipeRefreshLayout mRefresh;
     private int mSubjectId;
+    private ImageView mHeadImage;
+    private TextView mHeadTitle;
 
 
     public static SubjectFragment newInstance(int id)
@@ -79,12 +88,33 @@ public class SubjectFragment extends BaseFragment
                 mRefresh.setRefreshing(false);
             }
         });
+
+        mNewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(SubjectFragment.this.getActivity(), ContentActivity.class);
+
+                StoryEntity entity = (StoryEntity) parent.getItemAtPosition(position);
+                intent.putExtra(ContentActivity.LIST_INDEX, position - 1);
+                intent.putExtra(ContentActivity.STORY_LIST, mStoryAdapter.getStories());
+                startActivity(intent);
+            }
+        });
     }
 
     private void initView(View view) {
 
         mNewsListView = (ListView) view.findViewById(R.id.news);
         mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.refresh);
+
+        View layout = LayoutInflater.from(getActivity()).inflate(R.layout.subject_headview, mNewsListView, false);
+
+        mHeadImage = (ImageView) layout.findViewById(R.id.image);
+        mHeadTitle = (TextView) layout.findViewById(R.id.title);
+
+
+        mNewsListView.addHeaderView(layout);
     }
 
     private void initData(View view) {
@@ -125,6 +155,9 @@ public class SubjectFragment extends BaseFragment
                         if (news.getStories() != null) {
                             mStoryAdapter.addStories(news.getStories());
                         }
+                        ImageLoader.getInstance().displayImage(news.getBackground(), mHeadImage);
+                        mHeadTitle.setText(news.getDescription());
+
                     }
                 });
             }

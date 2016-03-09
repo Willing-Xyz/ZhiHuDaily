@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,15 +74,15 @@ public class MainFragment extends BaseFragment {
 
     private void setupListener(View view) {
 
-//        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//
-//                initLastestNews(true);
-//
-//                mRefresh.setRefreshing(false);
-//            }
-//        });
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                initLastestNews(true);
+
+                mRefresh.setRefreshing(false);
+            }
+        });
 
         mNewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,7 +91,10 @@ public class MainFragment extends BaseFragment {
                 Intent intent = new Intent(MainFragment.this.getActivity(), ContentActivity.class);
 
                 StoryEntity entity = (StoryEntity) parent.getItemAtPosition(position);
-                intent.putExtra(ContentActivity.LIST_INDEX, position);
+                if (entity.getItemType() == StoryType.DATE_TYPE) {
+                    return;
+                }
+                intent.putExtra(ContentActivity.LIST_INDEX, position - 1);
                 intent.putExtra(ContentActivity.STORY_LIST, mStoryAdapter.getStories());
                 startActivity(intent);
             }
@@ -105,44 +109,60 @@ public class MainFragment extends BaseFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (visibleItemCount <= 1 || firstVisibleItem == 0)
-                {
+                if (visibleItemCount <= 1 || firstVisibleItem == 0) {
                     return;
                 }
 
                 StoryEntity entity = (StoryEntity) view.getItemAtPosition(firstVisibleItem);
-                if (entity.getItemType() == StoryType.DATE_TYPE)
-                {
-                    if (firstVisibleItem == 1)
-                    {
+                if (entity.getItemType() == StoryType.DATE_TYPE) {
+                    if (firstVisibleItem == 1) {
+                        mPageChangedListener.onPageChanged(entity.getTitle());
+                    } else {
                         mPageChangedListener.onPageChanged(entity.getTitle());
                     }
-                    else
-                    {
-                        mPageChangedListener.onPageChanged(entity.getTitle());
-                    }
-                }
-                else
-                {
+                } else {
                     int i = 0;
-                    for (i = firstVisibleItem - 1; i >= 1; --i)
-                    {
+                    for (i = firstVisibleItem - 1; i >= 1; --i) {
                         entity = (StoryEntity) view.getItemAtPosition(i);
-                        if (entity.getItemType() == StoryType.DATE_TYPE)
-                        {
+                        if (entity.getItemType() == StoryType.DATE_TYPE) {
                             break;
                         }
 
                     }
-                    if (i == 1)
-                    {
+                    if (i == 1) {
                         mPageChangedListener.onPageChanged(entity.getTitle());
                         return;
                     }
 
 
-
                     mPageChangedListener.onPageChanged(entity.getTitle());
+                }
+            }
+        });
+
+        mCarouselView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+                if (state == ViewPager.SCROLL_STATE_DRAGGING || state == ViewPager.SCROLL_STATE_SETTLING)
+                {
+                    mRefresh.setEnabled(false);
+                    mCarouselView.setInScroll(true);
+                }
+                else
+                {
+                    mRefresh.setEnabled(true);
+                    mCarouselView.setInScroll(false);
                 }
             }
         });
@@ -206,7 +226,7 @@ public class MainFragment extends BaseFragment {
 
 
 
-                        mCarouselView.setAdapter(news.getTop_stories());
+                        mCarouselView.setAdapter(news.getTop_stories(), mStoryAdapter.getStories());
                         mIndicator.setViewPager(mCarouselView);
 
                     }

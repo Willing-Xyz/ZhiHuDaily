@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
 import com.example.willing.zhihudaily.adapter.CarouselAdapter;
+import com.example.willing.zhihudaily.model.StoryEntity;
 import com.example.willing.zhihudaily.model.TopStoriesEntity;
 
 import java.util.List;
@@ -25,12 +26,13 @@ public class CarouselView extends ViewPager
         @Override
         public void run() {
 
-            if (getAdapter() != null) {
+            if (getAdapter() != null && !isInScroll()) {
                 setCurrentItem((getCurrentItem() + 1) % getAdapter().getCount(), true);
             }
             mHandler.postDelayed(mUpdateRunnable, DELAY_TIME);
         }
     };
+    private boolean mInScroll;
 
     public CarouselView(Context context) {
 
@@ -45,9 +47,9 @@ public class CarouselView extends ViewPager
 
     }
 
-    public void setAdapter(List<TopStoriesEntity> entity)
+    public void setAdapter(List<TopStoriesEntity> entity, List<StoryEntity> list)
     {
-        setAdapter(new CarouselAdapter(mContext, entity));
+        setAdapter(new CarouselAdapter(mContext, entity, list));
     }
 
     @Override
@@ -62,5 +64,13 @@ public class CarouselView extends ViewPager
         super.onDetachedFromWindow();
 
         mHandler.removeCallbacks(mUpdateRunnable);
+    }
+
+    public void setInScroll(boolean mInScroll) {
+        this.mInScroll = mInScroll;
+    }
+
+    public boolean isInScroll() {
+        return mInScroll;
     }
 }
