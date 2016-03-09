@@ -79,7 +79,9 @@ public class ContentViewPagerAdapter extends PagerAdapter
 
                         if (content.getImage() == null)
                         {
-                           view.setVisibility(View.GONE);
+                           imageView.setVisibility(View.GONE);
+                            textView.setVisibility(View.GONE);
+                            view.invalidate();
                         }
                         else {
                             ImageLoader.getInstance().displayImage(content.getImage(), imageView);

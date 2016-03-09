@@ -12,10 +12,29 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/view_carousel"
-        android:layout_height="230dp"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/image"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="230dp" />
+
+
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_alignBottom="@id/image"
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+
+    </RelativeLayout>
 
     <WebView
         android:id="@+id/webView"
