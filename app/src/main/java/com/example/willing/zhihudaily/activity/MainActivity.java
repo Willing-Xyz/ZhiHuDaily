@@ -1,10 +1,12 @@
 package com.example.willing.zhihudaily.activity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +30,7 @@ import okhttp3.Response;
 /**
  * Created by Willing on 2/28/2016/028.
  */
-public class MainActivity extends BaseActivity
+public class MainActivity extends BaseActivity implements MainFragment.OnPageChangedListener
 {
     private static final String LASTEST_NEWS_URL = "http://news-at.zhihu.com/api/4/news/latest";
     private static final String SUBJECT_LIST_URL = "http://news-at.zhihu.com/api/4/themes";
@@ -39,13 +41,14 @@ public class MainActivity extends BaseActivity
     private DrawerLayout mDrawer;
     private DrawerLayout.DrawerListener mDrawerListener;
     private SubjectsEntity mSubjects;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+
 
         if (getSupportFragmentManager().findFragmentById(R.id.story_list) == null)
         {
@@ -54,6 +57,8 @@ public class MainActivity extends BaseActivity
 
         initView();
         setupListener();
+
+
     }
 
     @Override
@@ -102,6 +107,7 @@ public class MainActivity extends BaseActivity
             }
         };
         mDrawer.addDrawerListener(mDrawerListener);
+        mDrawer.addDrawerListener(mDrawerToggle);
 
         mNavigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -136,7 +142,45 @@ public class MainActivity extends BaseActivity
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
         mNavigation = (NavigationView) findViewById(R.id.navigation);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        setSupportActionBar(mToolBar);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolBar, 0, 0);
+
     }
 
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.navigation_items, menu);
+//
+//        return true;
+//    }
 
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        mDrawerToggle.onOptionsItemSelected(item);
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onPageChanged(String title) {
+        mToolBar.setTitle(title);
+    }
 }

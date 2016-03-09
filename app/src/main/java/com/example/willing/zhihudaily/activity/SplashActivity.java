@@ -48,7 +48,7 @@ public class SplashActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
 
         setContentView(R.layout.activity_splash);
 
@@ -86,7 +86,7 @@ public class SplashActivity extends BaseActivity
 
 
         // 缩放动画
-        mSplashImageView.animate().setDuration(30).scaleX(1.1f).scaleY(1.1f)
+        mSplashImageView.animate().setDuration(300).scaleX(1.1f).scaleY(1.1f)
                 .setListener(new AnimatorListenerAdapter() {
 
                     @Override

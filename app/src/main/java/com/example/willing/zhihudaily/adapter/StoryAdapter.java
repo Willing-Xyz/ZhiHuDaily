@@ -220,11 +220,6 @@ public class StoryAdapter extends BaseAdapter{
 
                 final BeforeStoriesEntity news = gson.fromJson(response.body().string(), BeforeStoriesEntity.class);
 
-//                for (int i = 0; i < news.getStories().size(); ++i)
-//                {
-//                    Log.i("test", news.getStories().get(i).getType() + ", " + news.getStories().get(i).getTitle());
-//                }
-
                 mDate = news.getDate();
                 StoryEntity dateItem = new StoryEntity();
                 dateItem.setItemType(StoryType.DATE_TYPE);

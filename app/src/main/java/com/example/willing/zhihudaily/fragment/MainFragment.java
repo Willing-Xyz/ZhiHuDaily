@@ -1,5 +1,6 @@
 package com.example.willing.zhihudaily.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -35,10 +37,25 @@ public class MainFragment extends BaseFragment {
     private static final String LASTEST_NEWS_URL = "http://news-at.zhihu.com/api/4/news/latest";
 
 
+
+
     private ListView mNewsListView;
     private StoryAdapter mStoryAdapter;
     private SwipeRefreshLayout mRefresh;
+    private OnPageChangedListener mPageChangedListener;
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mPageChangedListener = (OnPageChangedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.getClass().getSimpleName() + " must implement OnPageChangedListener");
+        }
+
+    }
 
     @Nullable
     @Override
@@ -79,6 +96,59 @@ public class MainFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
+
+        mNewsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+                if (visibleItemCount == 0)
+                {
+                    return;
+                }
+
+                StoryEntity entity = (StoryEntity) view.getItemAtPosition(firstVisibleItem);
+                if (entity.getItemType() == StoryType.DATE_TYPE)
+                {
+                    if (firstVisibleItem == 0)
+                    {
+                        mPageChangedListener.onPageChanged(entity.getTitle());
+                    }
+                    else
+                    {
+
+
+                        mPageChangedListener.onPageChanged(entity.getTitle());
+                    }
+                }
+                else
+                {
+                    int i = 0;
+                    for (i = firstVisibleItem - 1; i >= 0; --i)
+                    {
+                        entity = (StoryEntity) view.getItemAtPosition(i);
+                        if (entity.getItemType() == StoryType.DATE_TYPE)
+                        {
+                            break;
+                        }
+
+                    }
+                    if (i == 0)
+                    {
+                        mPageChangedListener.onPageChanged(entity.getTitle());
+                        return;
+                    }
+
+
+
+                    mPageChangedListener.onPageChanged(entity.getTitle());
+                }
+            }
+        });
     }
 
     private void initView(View view) {
@@ -97,6 +167,7 @@ public class MainFragment extends BaseFragment {
     }
 
     public void initLastestNews(final boolean cleanBefore) {
+
         OkHttpClient client = HttpUtils.getInstance();
 
         Request request = new Request.Builder().url(LASTEST_NEWS_URL).build();
@@ -131,5 +202,10 @@ public class MainFragment extends BaseFragment {
         });
 
 
+    }
+
+    public static interface OnPageChangedListener
+    {
+        void onPageChanged(String title);
     }
 }
