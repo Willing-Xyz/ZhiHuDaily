@@ -2,6 +2,8 @@ package com.example.willing.zhihudaily.activity;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.example.willing.zhihudaily.R;
 import com.example.willing.zhihudaily.adapter.ContentViewPagerAdapter;
@@ -22,6 +24,7 @@ public class ContentActivity extends BaseActivity
 
     private ViewPager mViewPager;
     private ContentViewPagerAdapter mViewPagerAdapter;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +36,17 @@ public class ContentActivity extends BaseActivity
         setupListener();
         initData();
 
-//        fetchContent();
+
     }
 
     private void setupListener() {
 
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void initData() {
@@ -71,43 +80,12 @@ public class ContentActivity extends BaseActivity
     {
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mViewPager.setOffscreenPageLimit(1);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
+
+        mToolbar.setNavigationIcon(R.drawable.back);
     }
 
-//    private void fetchContent() {
-//
-//        OkHttpClient client = HttpUtils.getInstance();
-//
-//        mContent = (WebView) findViewById(R.id.content);
-//        mContent.getSettings().setJavaScriptEnabled(true);
-//
-//        int id = getIntent().getIntExtra(LIST_INDEX, 0);
-//        Request request = new Request.Builder().url(CONTENT_URL + id).build();
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//
-//                Gson gson = new Gson();
-//                StoryContentEntity content = gson.fromJson(response.body().string(), StoryContentEntity.class);
-//
-//                String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/css/news.css\" type=\"text/css\">";
-//                String html = "<html><head>" + css + "</head><body>" + content.getBody() + "</body></html>";
-//                html = html.replace("<div class=\"img-place-holder\">", "");
-//
-//                final String finalHtml = html;
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        mContent.loadDataWithBaseURL("x-data://base", finalHtml, "text/html", "UTF-8", null);
-//                    }
-//                });
-//            }
-//        });
-//    }
+
 }

@@ -81,7 +81,7 @@ public class SplashActivity extends BaseActivity
         }
         else
         {
-            mSplashImageView.setImageResource(R.mipmap.splash);
+            mSplashImageView.setImageResource(R.drawable.splash);
         }
 
 
